@@ -3,40 +3,25 @@ from anthropic import beta_tool
 from dotenv import load_dotenv
 import json
 import requests
+from IPython.display import Image, display
+from typing import Annotated, Any, Dict, List, TypedDict
+from pydantic import BaseModel, Field
 
+# LangChain / Anthropic integrations
+from langchain_anthropic import ChatAnthropic
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_core.tools import tool
+
+# LangGraph runtime primitives
+from langgraph.graph import StateGraph, START, END
 
 load_dotenv()
 
 
-client = anthropic.Anthropic()
-
-# tools = [
-#     {
-#         "name": "get_conversion_rate",
-#         "description": "Retrieves the current exchange rate between two specified currencies using ISO 4217 standard 3-letter currency codes.",
-#         "input_schema": {
-#             "type": "object",
-#             "properties": {
-#                 "base_currency": {
-#                     "type": "string",
-#                     "description": "The 3-letter ISO 4217 currency code to convert from (e.g., USD, EUR, GBP, JPY)."
-#                 },
-#                 "target_currency": {
-#                     "type": "string",
-#                     "description": "The 3-letter ISO 4217 currency code to convert into (e.g., EUR, CAD, AUD, INR)."
-#                 }
-#             },
-#             "required": ["base_currency", "target_currency"],
-#             "additionalProperties": False
-#         },
-#         "input_examples": [
-#                 {"base_currency": "USD", "target_currency": "EUR"}
-#             ]
-#     }
-# ]
+# client = anthropic.Anthropic()
 
 
-@beta_tool
+@tool
 def get_conversion_rate(base_currency: str, target_currency: str):
     """Retrieves the current exchange rate between two specified currencies.
 
@@ -75,78 +60,80 @@ def get_conversion_rate(base_currency: str, target_currency: str):
         return print(f"An error occurred: {req_err}")
     
 
-# get_conversion_rate()
 
-user_input = input("What do you want to convert?")
+# define node state
+class ConversionNodeState(TypedDict):
+    user_input: str
+    conversion_result: str
 
-if user_input.strip() == "":
-    user_input = input("What do you want to convert?")
 
-messages = [
-    {"role": "user", "content": str(user_input)}
-]
-
-runner = client.beta.messages.tool_runner(
+model = ChatAnthropic(
     model="claude-haiku-4-5",
-    max_tokens=1024,
-    tools=[get_conversion_rate],
-    tool_choice={"type": "auto", "disable_parallel_tool_use": True},
-    system="You are a precise, single-purpose Currency Conversion Agent. Your sole task is to take a financial value in one currency specified by the user. If the user inputs something you can't understand or is ambigious, ask for more clarity query an external exchange rate tool, and convert that value into the target currency.",
-    messages=messages,
-    stream=True
+    max_tokens=1024
 )
 
+tools = [get_conversion_rate]
 
-final_message = runner.until_done()
-for block in final_message.content:
-    if block.type == "text":
-        print(block.text)
-
-
-# for message_stream in runner:
-#     for event in message_stream:
-#         print("event:", event)
-#     print("message:", message_stream.get_final_message())
-
-# print(runner.until_done())
+model_with_tools = model.bind_tools(tools=tools, parallel_tool_use=True)
 
 
 
-# print(response)
+def conversion_node(state: ConversionNodeState) -> ConversionNodeState:
+    user_input = state.get("user_input", "")
+    if not user_input.strip():
+        raise ValueError("User input is required for conversion.")
 
-# while response.stop_reason == "tool_use":
-#     tool_use = next(block for block in response.content if block.type == "tool_use")
-#     print(f"Tool: {tool_use.name}")
-#     print(f"Input: {tool_use.input}")
+    messages = [
+        {"role": "user", "content": str(user_input)}
+    ]
 
-#     results = get_conversion_rate(tool_use.input["base_currency"], tool_use.input["target_currency"])
-#     # print(f"Results from the API: {results}")
-#     if results:
-#         messages += [{"role": "assistant", "content": response.content},
-#                 {
-#                     "role": "user",
-#                     "content": [
-#                         {
-#                             "type": "tool_result",
-#                             "tool_use_id": tool_use.id,
-#                             "content": json.dumps(results),
-#                         }
-#                     ],
-#                 }]
+    runner = model_with_tools.run(
+        messages=messages,
+        system="You are a precise, single-purpose Currency Conversion Agent. Your sole task is to take a financial value in one currency specified by the user. If the user inputs something you can't understand or is ambiguous, ask for more clarity, query an external exchange rate tool, and convert that value into the target currency.",
+        stream=True
+    )
 
-#         # print(messages)
+    conversion_result = ""
+    print(runner)
+    for message in runner:
+        if message["type"] == "tool_response":
+            conversion_result += message["content"]
+        elif message["type"] == "model_response":
+            conversion_result += message["content"]
 
-#         response = client.messages.create(
-#             model="claude-haiku-4-5",
-#             max_tokens=1024,
-#             tools=get_conversion_rate,
-#             tool_choice={"type": "auto", "disable_parallel_tool_use": True},
-#             system="You are a precise, single-purpose Currency Conversion Agent. Your sole task is to take a financial value in one currency specified by the user. If the user inputs something you can't understand or is ambigious, ask for more clarity query an external exchange rate tool, and convert that value into the target currency.",
-#             messages=messages
-#         )
-#     else:
-#         print('An error occured while fetching for the exchange rates')
+    state["conversion_result"] = conversion_result
+    return state
 
-# print(f"stop_reason: {response.stop_reason}")
-# final_text = next(block for block in response.content if block.type == "text")
-# print(final_text.text)
+
+graph = StateGraph(ConversionNodeState)
+
+graph.add_node("conversion_node", conversion_node, inputs=["user_input"], outputs=["conversion_result"])
+
+graph.add_edge(START, "conversion_node")
+graph.add_edge("conversion_node", "conversion_node")  # Loop back to the same node for continuous conversion
+graph.add_edge("conversion_node", END)
+
+app = graph.compile()
+
+display(Image(app.get_graph().draw_mermaid_png()))
+
+# user_input = input("What do you want to convert?")
+
+# if user_input.strip() == "":
+#     user_input = input("What do you want to convert?")
+
+# messages = [
+#     {"role": "user", "content": str(user_input)}
+# ]
+
+# runner = client.beta.messages.tool_runner(
+#     model="claude-haiku-4-5",
+#     max_tokens=1024,
+#     tools=[get_conversion_rate],
+#     tool_choice={"type": "auto", "disable_parallel_tool_use": True},
+#     system="You are a precise, single-purpose Currency Conversion Agent. Your sole task is to take a financial value in one currency specified by the user. If the user inputs something you can't understand or is ambigious, ask for more clarity query an external exchange rate tool, and convert that value into the target currency.",
+#     messages=messages,
+#     stream=True
+# )
+
+
