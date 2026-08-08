@@ -1,0 +1,17 @@
+anthropic
+langgraph
+langfuse
+fastapi
+uvicorn
+streamlit
+sqlalchemy
+psycopg2-binary
+chromadb
+voyageai
+pymupdf
+pdfplumber
+python-docx
+tavily-python
+python-dotenv
+requests
+pytest

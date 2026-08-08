@@ -1,0 +1,90 @@
+[
+  {
+    "id": "z4_eval_001",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2022,
+      "mileage_km": 28000,
+      "error_codes": ["P0171", "P0174"],
+      "symptom_description": "Running lean on both banks, rough idle, slight hesitation at low RPM. B58 engine.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "classification.severity_in": ["medium", "high"],
+      "report_must_mention": ["B58", "lean", "fuel"],
+      "report_must_not_mention": ["N54", "E89"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 90
+    }
+  },
+  {
+    "id": "z4_eval_002",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2011,
+      "mileage_km": 95000,
+      "error_codes": ["30FF"],
+      "symptom_description": "N54 engine, high pressure fuel pump failure, engine hesitation under load, HPFP fault code.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["N54", "fuel pump", "HPFP"],
+      "report_must_not_mention": ["G29", "B58"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 90
+    }
+  },
+  {
+    "id": "z4_eval_003",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2021,
+      "mileage_km": 15000,
+      "error_codes": [],
+      "symptom_description": "Retractable hardtop fails to close fully, stops halfway through cycle, no error code stored.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "electrical",
+      "report_must_mention": ["roof", "hardtop"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 90
+    }
+  },
+  {
+    "id": "z4_eval_004",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2013,
+      "mileage_km": 72000,
+      "error_codes": ["P0011", "P0014"],
+      "symptom_description": "VANOS fault codes, rough cold start, improved after warmup. N20 engine.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["VANOS", "N20", "camshaft"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 90
+    }
+  },
+  {
+    "id": "z4_eval_005",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2023,
+      "mileage_km": 5000,
+      "error_codes": ["A0A8"],
+      "symptom_description": "ABS warning light, rear wheel speed sensor fault, ABS activates incorrectly on dry roads at low speed.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.severity_in": ["high", "safety_critical"],
+      "validation.requires_escalation": true,
+      "report_must_mention": ["ABS", "wheel speed sensor"],
+      "max_latency_seconds": 90
+    }
+  }
+]
