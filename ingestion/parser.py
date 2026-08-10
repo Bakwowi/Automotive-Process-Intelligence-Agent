@@ -3,6 +3,7 @@ import pymupdf
 import os
 from dataclasses import dataclass
 from typing import List
+import tqdm
 
 
 @dataclass
@@ -22,13 +23,13 @@ def parse_document(file_path: object, doc_type: str) -> ParsedDocument:
     """
         Get the pdf and extract all the text and tables
     """
-    print("---Parsing the document---")
+    print(f"----Parsing the document {file_path.name}----")
     doc = pymupdf.open(file_path)
 
     results = dict()
     results["file_path"] = os.path.relpath(file_path)
     results["doc_type"] = doc_type
-    results["title"] = file_path.name
+    results["title"] = file_path.name.strip(".pdf")
     results["pages"] = []
     results["metadata"] = {
         "file_name": file_path.name,
@@ -37,14 +38,17 @@ def parse_document(file_path: object, doc_type: str) -> ParsedDocument:
     }
 
     pages = []
+    has_tables = False
 
-    for page_num, page in enumerate(doc, start=1):
+    for page_num, page in tqdm.tqdm(enumerate(doc, start=1)):
         text = page.get_text("text").strip()
 
         tables = []
 
         try:
             tables_finder = page.find_tables()
+            if tables_finder:
+                has_tables = True
 
             for table in tables_finder:
                 data = table.extract()
@@ -68,7 +72,8 @@ def parse_document(file_path: object, doc_type: str) -> ParsedDocument:
         metadata={
             "filename": file_path.name,
             "total_pages": len(pages),
-            "doc_type": doc_type
+            "doc_type": doc_type,
+            "has_tables": has_tables
         }
     )
 
@@ -80,7 +85,7 @@ def parse_all_documents(documents_dir: str) -> List[ParsedDocument]:
     for pdf_path in Path(documents_dir).glob("**/*.pdf"):
         print(f"  Parsing: {pdf_path.name}")
         try:
-            doc = parse_document(str(pdf_path))
+            doc = parse_document(str(pdf_path), pdf_path.parent.name)
             docs.append(doc)
         except Exception as e:
             print(f"  ERROR parsing {pdf_path.name}: {e}")

@@ -1,6 +1,6 @@
 from parser import ParsedDocument, parse_document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from pathlib import Path
+# from pathlib import Path
 from typing import List
 from dataclasses import dataclass
 import tqdm
@@ -73,8 +73,10 @@ def chunk_document(doc: ParsedDocument) -> List[Chunk]:
                 chunk_index=chunk_index,
                 metadata={
                     "source": doc.metadata["filename"],
+                    "title": doc.title,
                     "doc_type": doc.doc_type,
                     "page": page["page_num"],
+                    "has_tables": doc.metadata["has_tables"]
                 }
             ))
             chunk_index += 1
@@ -87,11 +89,11 @@ def chunk_document(doc: ParsedDocument) -> List[Chunk]:
 
 
 
-file_path = Path(r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\documents\tsbs\Clunking sounds and vehicle jerking at slow speeds with large steering angle.pdf")
+# file_path = Path(r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\documents\tsbs\Clunking sounds and vehicle jerking at slow speeds with large steering angle.pdf")
 
-parsed_doc = parse_document(file_path, "tsb")
+# parsed_doc = parse_document(file_path, "tsb")
 
-print(chunk_document(parsed_doc))
+# print(chunk_document(parsed_doc))
 
 
 # Chunk
