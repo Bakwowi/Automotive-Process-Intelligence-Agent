@@ -80,12 +80,12 @@ def parse_document(file_path: object, doc_type: str) -> ParsedDocument:
 
 
 
-def parse_all_documents(documents_dir: str) -> List[ParsedDocument]:
+def parse_all_documents(documents_dir) -> List[ParsedDocument]:
     docs = []
     for pdf_path in Path(documents_dir).glob("**/*.pdf"):
-        print(f"  Parsing: {pdf_path.name}")
+        # print(f"  Parsing: {pdf_path.name}")
         try:
-            doc = parse_document(str(pdf_path), pdf_path.parent.name)
+            doc = parse_document(pdf_path, pdf_path.parent.name)
             docs.append(doc)
         except Exception as e:
             print(f"  ERROR parsing {pdf_path.name}: {e}")
