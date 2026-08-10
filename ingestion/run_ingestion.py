@@ -1,7 +1,3 @@
-"""
-Run this script to build the knowledge base from PDFs in data/documents/.
-Usage: python -m ingestion.run_ingestion
-"""
 import os
 from dotenv import load_dotenv
 from parser import parse_all_documents
