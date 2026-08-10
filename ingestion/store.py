@@ -31,8 +31,29 @@ def store_in_chromadb(chunks: Chunk, embeddings: List[List[float]], collection_n
             vecs.append(embedding)
 
     if ids:
-        collection.upsert(ids=ids, documents=texts, metadatas=metas, embeddings=vecs)
-        print(f"    Stored {len(ids)} chunks in '{collection_name}' collection")
+
+        # def batch_list(input_list, batch_size=1000):
+        #     """Yield successive batches from input_list."""
+        #     for i in range(0, len(input_list), batch_size):
+        #         yield input_list[i : i + batch_size]
+
+        BATCH_SIZE = 1000 
+
+        for i in range(0, len(ids), BATCH_SIZE):
+            batch_ids = ids[i : i + BATCH_SIZE]
+            batch_embeddings = vecs[i : i + BATCH_SIZE]
+            batch_documents = texts[i : i + BATCH_SIZE]
+            batch_metadatas = metas[i : i + BATCH_SIZE]
+            
+            collection.upsert(
+                ids=batch_ids,
+                embeddings=batch_embeddings,
+                documents=batch_documents,
+                metadatas=batch_metadatas
+            )
+            print(f"Inserted batch {i // BATCH_SIZE + 1} ({len(batch_ids)} items)")
+
+        print(f"Stored {len(ids)} chunks in '{collection_name}' collection")
 
 
 

@@ -40,7 +40,7 @@ def parse_document(file_path: object, doc_type: str) -> ParsedDocument:
     pages = []
     has_tables = False
 
-    for page_num, page in tqdm.tqdm(enumerate(doc, start=1)):
+    for page_num, page in tqdm.tqdm(enumerate(doc, start=1), desc="doc parsing progress"):
         text = page.get_text("text").strip()
 
         tables = []
