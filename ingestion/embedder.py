@@ -11,7 +11,7 @@ def embed_chunks(chunks: List[Chunk], batch_size: int = 128) -> List[List[float]
     texts = [chunk.text for chunk in chunks]
 
     try:
-        all_embeddings = embedder.encode(
+        all_embeddings = embedder.encode_document(
             inputs=texts,
             batch_size=batch_size,
             show_progress_bar=True,
