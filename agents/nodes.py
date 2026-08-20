@@ -188,15 +188,15 @@ After your research, respond with a JSON object (no markdown, no explanation):
     feedback_section = f"\n\nIMPORTANT — Human reviewer feedback on previous attempt:\n{feedback}\nAddress these concerns in your research." if feedback else ""
 
     user_message = f"""Research this vehicle defect:
+                    Vehicle: {defect['vehicle_model']} ({defect['year']}), {defect['mileage_km']:,} km
+                    Error codes: {', '.join(defect['error_codes']) if defect['error_codes'] else 'None'}
+                    Symptom: {defect['symptom_description']}
+                    Classification: {classification['defect_category']} — {classification['severity']} severity
+                    Search keywords: {keywords}{feedback_section}
 
-Vehicle: {defect['vehicle_model']} ({defect['year']}), {defect['mileage_km']:,} km
-Error codes: {', '.join(defect['error_codes']) if defect['error_codes'] else 'None'}
-Symptom: {defect['symptom_description']}
-Classification: {classification['defect_category']} — {classification['severity']} severity
-Search keywords: {keywords}{feedback_section}
-
-Search for TSBs, manuals, repair procedures, and known issues related to this defect.
-Be thorough — search with multiple queries covering different angles of the problem."""
+                    Search for TSBs, manuals, repair procedures, and known issues related to this defect.
+                    Be thorough — search with multiple queries covering different angles of the problem. 
+                  """
 
     raw_response, tool_calls = run_agent_with_tools(
         system_prompt=system,
