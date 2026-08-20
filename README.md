@@ -209,14 +209,14 @@ Open your browser:
 
 
 **Defect Submission Form**
-![Defect Tab](assets/screenshots/submit.png)
+![Defect Tab](assets/submit.png)
 
 
 **Live Agent Trace**
-![Trace Tab](assets/screenshots/trace.png)
+![Trace Tab](assets/trace.png)
 
 **Report Review and Approval**
-![Review Tab](assets/screenshots/review.png)
+![Review Tab](assets/review.png)
 
 <!-- **Generated Word Report**
 ![Word Report](assets/screenshots/report_docx.png) -->
