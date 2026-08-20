@@ -1,15 +1,17 @@
 import chromadb
-# import os
+from pathlib import Path
 import json
 from typing import List
 from chunker import Chunk
 # from sentence_transformers import SentenceTransformer
 import sqlite3
 
-
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE_PATH = BASE_DIR / "data" / "sqlLite_db" / "apia_db.db"
+CHROMADB_PATH = BASE_DIR / "data" / "chroma_db"
 
 def get_chroma_client():
-    return chromadb.PersistentClient(path=r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\chroma_db")
+    return chromadb.PersistentClient(CHROMADB_PATH)
 
 
 def create_get_collection(client, name: str = "automotive_docs"):
@@ -60,8 +62,6 @@ def store_in_chromadb(chunks: Chunk, embeddings: List[List[float]], collection_n
 def setup_database():
     """Creates tables if they don't exist."""
 
-    DATABASE_PATH = r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\sqlLite_db\apia_db.db"
-
     with sqlite3.connect(DATABASE_PATH) as conn:
         cursor = conn.cursor()
 
@@ -107,8 +107,6 @@ def setup_database():
 
 def store_chunks_in_sqlLite(chunks: List[Chunk]):
     """Stores raw chunk text and metadata in sqlLite for full retrieval."""
-
-    DATABASE_PATH = r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\sqlLite_db\apia_db.db"
 
     with sqlite3.connect(DATABASE_PATH) as conn:
         cursor = conn.cursor()

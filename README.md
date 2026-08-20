@@ -51,7 +51,7 @@ A human engineer reviews and approves the report before it is saved — ensuring
 │  chunker.py ─── 512-token overlapping chunks                │
 │       │                                                     │
 │       ▼                                                     │
-│  embedder.py ── BAAI/bge-m3 (local, no API cost)           │
+│  embedder.py ── all-MiniLM-L6-v2 (local, no API cost)           │
 │       │                                                     │
 │       ├──► ChromaDB  (3 typed vector collections)           │
 │       └──► SQLite    (raw chunks + metadata)                │
@@ -101,7 +101,7 @@ After the report is generated, a **human-in-the-loop checkpoint** pauses the gra
 |---|---|
 | LLM | Anthropic Claude (claude-haiku-4-5, claude-sonnet-4-6) |
 | Agent Orchestration | LangGraph |
-| Embeddings | Sentence Transformers — BAAI/bge-m3 (local, no API cost) |
+| Embeddings | Sentence Transformers — all-MiniLM-L6-v2 (local, no API cost) |
 | Vector Store | ChromaDB (persistent, file-based) |
 | Document Store | SQLite via SQLAlchemy (file-based, no server) |
 | PDF Parsing | PyMuPDF + pdfplumber + pytesseract (OCR) |
@@ -147,7 +147,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> **Note:** `sentence-transformers` will download the `BAAI/bge-m3` model (~500MB) on first use. This is a one-time download stored in your local model cache.
+> **Note:** `sentence-transformers` will download the `all-MiniLM-L6-v2` model on first use. This is a one-time download stored in your local model cache.
 
 ### 4. Configure Environment Variables
 
@@ -156,7 +156,7 @@ Create a `.env` file in the project root:
 ```bash
 # Required
 ANTHROPIC_API_KEY=your_anthropic_api_key
-TAVILY_API_KEY=your_tavily_api_key
+# TAVILY_API_KEY=your_tavily_api_key
 
 # Database — SQLite, no server needed
 DATABASE_URL=sqlite:///./data/apia.db
@@ -168,7 +168,7 @@ LANGFUSE_SECRET_KEY=your_langfuse_secret_key
 
 Get your keys here:
 - Anthropic API key → [console.anthropic.com](https://console.anthropic.com)
-- Tavily API key → [tavily.com](https://tavily.com)
+<!-- - Tavily API key → [tavily.com](https://tavily.com) -->
 - Langfuse (optional, self-hosted) → see [Langfuse docs](https://langfuse.com/docs)
 
 
@@ -185,7 +185,7 @@ Start the API and frontend in two separate terminals.
 **Terminal 1 — FastAPI backend:**
 
 ```bash
-uvicorn api.main:app --reload --port 8000
+uvicorn main:app --reload --port 8000
 ```
 
 **Terminal 2 — Streamlit frontend:**
@@ -217,6 +217,7 @@ Open your browser:
 
 **Report Review and Approval**
 ![Review Tab](assets/review.png)
+![Review Tab](assets/review2.png)
 
 <!-- **Generated Word Report**
 ![Word Report](assets/screenshots/report_docx.png) -->

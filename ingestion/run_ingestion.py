@@ -1,4 +1,5 @@
 # import os
+from pathlib import Path
 from dotenv import load_dotenv
 from parser import parse_all_documents
 from chunker import chunk_document
@@ -10,7 +11,9 @@ from store import (
 )
 
 load_dotenv()
-DOCUMENTS_DIR = r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\documents"
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DOCUMENTS_DIR = BASE_DIR / "data" / "documents"
 
 
 def run():

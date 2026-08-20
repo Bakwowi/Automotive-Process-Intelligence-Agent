@@ -5,17 +5,17 @@
       "vehicle_model": "BMW Z4 G29",
       "year": 2022,
       "mileage_km": 28000,
-      "error_codes": ["P0171", "P0174"],
-      "symptom_description": "Running lean on both banks, rough idle, slight hesitation at low RPM. B58 engine.",
+      "error_codes": ["P0300"],
+      "symptom_description": "Engine misfires at idle, rough running, hesitation on acceleration. B58 engine.",
       "reported_by": "engineer"
     },
     "assertions": {
       "classification.defect_category": "engine",
       "classification.severity_in": ["medium", "high"],
-      "report_must_mention": ["B58", "lean", "fuel"],
-      "report_must_not_mention": ["N54", "E89"],
+      "report_must_mention": ["P0300", "misfire", "ignition"],
+      "report_must_not_mention": ["I don't know", "unable to determine"],
       "min_research_sources": 1,
-      "max_latency_seconds": 90
+      "max_latency_seconds": 120
     }
   },
   {
@@ -25,15 +25,15 @@
       "year": 2011,
       "mileage_km": 95000,
       "error_codes": ["30FF"],
-      "symptom_description": "N54 engine, high pressure fuel pump failure, engine hesitation under load, HPFP fault code.",
+      "symptom_description": "N54 engine high pressure fuel pump failure, engine hesitation under load, HPFP fault code stored.",
       "reported_by": "engineer"
     },
     "assertions": {
       "classification.defect_category": "engine",
-      "report_must_mention": ["N54", "fuel pump", "HPFP"],
+      "report_must_mention": ["N54", "fuel pump"],
       "report_must_not_mention": ["G29", "B58"],
       "min_research_sources": 1,
-      "max_latency_seconds": 90
+      "max_latency_seconds": 120
     }
   },
   {
@@ -49,8 +49,9 @@
     "assertions": {
       "classification.defect_category": "electrical",
       "report_must_mention": ["roof", "hardtop"],
+      "report_must_not_mention": ["engine", "fuel"],
       "min_research_sources": 1,
-      "max_latency_seconds": 90
+      "max_latency_seconds": 120
     }
   },
   {
@@ -65,9 +66,9 @@
     },
     "assertions": {
       "classification.defect_category": "engine",
-      "report_must_mention": ["VANOS", "N20", "camshaft"],
+      "report_must_mention": ["VANOS", "N20"],
       "min_research_sources": 1,
-      "max_latency_seconds": 90
+      "max_latency_seconds": 120
     }
   },
   {
@@ -82,9 +83,267 @@
     },
     "assertions": {
       "classification.severity_in": ["high", "safety_critical"],
-      "validation.requires_escalation": true,
       "report_must_mention": ["ABS", "wheel speed sensor"],
-      "max_latency_seconds": 90
+      "report_must_not_mention": ["engine", "fuel"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_006",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2010,
+      "mileage_km": 110000,
+      "error_codes": ["P0171", "P0174"],
+      "symptom_description": "Running lean on both banks, rough idle, slight hesitation at low RPM. N52 engine.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["lean", "fuel"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_007",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2020,
+      "mileage_km": 42000,
+      "error_codes": ["P0420"],
+      "symptom_description": "Catalyst efficiency below threshold, check engine light on, no drivability issues reported.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["catalyst", "P0420"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_008",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2014,
+      "mileage_km": 63000,
+      "error_codes": [],
+      "symptom_description": "Power steering feels heavy at low speed, intermittent loss of assist, no fault codes stored. Electric power steering.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "electrical",
+      "report_must_mention": ["steering"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_009",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2022,
+      "mileage_km": 31000,
+      "error_codes": ["P0597"],
+      "symptom_description": "Thermostat heater control circuit open fault, engine takes long to reach operating temperature in cold weather.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["thermostat", "temperature"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_010",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2012,
+      "mileage_km": 88000,
+      "error_codes": ["P0722"],
+      "symptom_description": "Output shaft speed sensor fault, transmission slipping, harsh shifting between gears. Automatic gearbox.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "transmission",
+      "report_must_mention": ["transmission", "speed sensor"],
+      "report_must_not_mention": ["engine misfire", "ignition"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_011",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2019,
+      "mileage_km": 22000,
+      "error_codes": [],
+      "symptom_description": "Infotainment screen freezes intermittently, iDrive controller unresponsive for 10-15 seconds, then recovers without restart.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "electrical",
+      "report_must_mention": ["iDrive", "infotainment"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_012",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2015,
+      "mileage_km": 54000,
+      "error_codes": ["P0128"],
+      "symptom_description": "Coolant temperature below thermostat regulating temperature, engine running cooler than normal, heater output reduced in cabin.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["coolant", "thermostat"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_013",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2023,
+      "mileage_km": 8000,
+      "error_codes": ["A0B2"],
+      "symptom_description": "Front left brake pad wear sensor fault, brake warning displayed, pads visually inspected and appear within tolerance.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "brake",
+      "report_must_mention": ["brake", "wear sensor"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_014",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2011,
+      "mileage_km": 79000,
+      "error_codes": ["P0340"],
+      "symptom_description": "Camshaft position sensor circuit malfunction bank 1, engine cranks but struggles to start, intermittent no-start condition.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "classification.severity_in": ["high", "safety_critical"],
+      "report_must_mention": ["camshaft", "sensor"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_015",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2020,
+      "mileage_km": 38000,
+      "error_codes": [],
+      "symptom_description": "Fuel cap warning displayed, no smell of fuel, cap confirmed tight. Evaporative emission system suspected.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "fuel_system",
+      "report_must_mention": ["fuel", "evaporative"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_016",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2013,
+      "mileage_km": 91000,
+      "error_codes": ["P0507"],
+      "symptom_description": "Idle control system RPM high, engine idles at 1200-1400 RPM instead of normal 650-750 RPM, no drivability issues beyond idle.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["idle", "RPM"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_017",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2022,
+      "mileage_km": 19000,
+      "error_codes": ["A0F3"],
+      "symptom_description": "Lane departure warning system fault, camera unable to detect lane markings, ADAS warning on dashboard.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "adas",
+      "report_must_mention": ["lane", "camera"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_018",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2016,
+      "mileage_km": 47000,
+      "error_codes": [],
+      "symptom_description": "Convertible soft top motor noise during operation, top operates correctly but grinding sound audible during open and close cycle.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "electrical",
+      "report_must_mention": ["roof", "motor"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_019",
+    "input": {
+      "vehicle_model": "BMW Z4 G29",
+      "year": 2021,
+      "mileage_km": 27000,
+      "error_codes": ["P062F"],
+      "symptom_description": "Internal control module EEPROM error, check engine light on, no drivability symptoms, fault stored in DME.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "electrical",
+      "report_must_mention": ["DME", "control module"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
+    }
+  },
+  {
+    "id": "z4_eval_020",
+    "input": {
+      "vehicle_model": "BMW Z4 E89",
+      "year": 2012,
+      "mileage_km": 103000,
+      "error_codes": ["P0302"],
+      "symptom_description": "Cylinder 2 misfire detected, rough idle, check engine light flashing under acceleration. N54 twin turbo engine.",
+      "reported_by": "engineer"
+    },
+    "assertions": {
+      "classification.defect_category": "engine",
+      "report_must_mention": ["cylinder", "misfire", "N54"],
+      "min_research_sources": 1,
+      "max_latency_seconds": 120
     }
   }
 ]

@@ -14,9 +14,6 @@ class ParsedDocument:
     pages: List[dict]
     metadata: dict
 
-# file_path = Path(r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\documents\tsbs\Clunking sounds and vehicle jerking at slow speeds with large steering angle.pdf")
-# print(file_path.name)
-# print(type(file_path))
 
 def parse_document(file_path: object, doc_type: str) -> ParsedDocument:
 

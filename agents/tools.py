@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import json
 # import voyageai
 import chromadb
@@ -14,9 +14,15 @@ load_dotenv()
 
 # _voyage_client = None
 _chroma_client = None
-_tavily_client = None
+# _tavily_client = None
 # _db_engine = None
 
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE_PATH = BASE_DIR / "data" / "sqlLite_db" / "apia_db.db"
+CHROMADB_PATH = BASE_DIR / "data" / "chroma_db"
+LOGS_DIR = BASE_DIR / "logs.json"
 
 # def get_voyage():
 #     global _voyage_client
@@ -27,8 +33,11 @@ _tavily_client = None
 
 def get_chroma():
     global _chroma_client
+    
     if not _chroma_client:
-        _chroma_client = chromadb.PersistentClient(path=r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\chroma_db")
+        _chroma_client = chromadb.PersistentClient(path=CHROMADB_PATH)
+
+    # print(_chroma_client)
     return _chroma_client
 
 
@@ -51,15 +60,18 @@ def get_chroma():
 def search_vector_store(query: str, n_results: int = 5, doc_type: str = None) -> dict:
     """
     Searches the general automotive documentation vector store.
-    Returns the top-n most relevant chunks.
+    Returns the top-n most relevant chunks. Could be tsbs, manuals or standards depending on the provided doc_type
     """
     try:
-        query_embedding = SentenceTransformer().encode_query(query)
+        query_embedding = embedding_model.encode_query(query)
+
+        # print("embedding", query_embedding)
 
         chroma = get_chroma()
         collection = chroma.get_collection("automotive_docs")
 
         where_filter = {"doc_type": doc_type} if doc_type else None
+        # print("where", where_filter)
 
         results = collection.query(
             query_embeddings=[query_embedding],
@@ -67,8 +79,12 @@ def search_vector_store(query: str, n_results: int = 5, doc_type: str = None) ->
             where=where_filter,
             include=["documents", "metadatas", "distances"]
         )
+        # print("results", results)
+        # print("collection", collection)
+        # return results
 
         chunks = []
+        # print("search vector store before", results, chunks)
         for i, doc in enumerate(results["documents"][0]):
             chunks.append({
                 "text": doc,
@@ -77,43 +93,89 @@ def search_vector_store(query: str, n_results: int = 5, doc_type: str = None) ->
                 "doc_type": results["metadatas"][0][i].get("doc_type"),
                 "relevance_score": round(1 - results["distances"][0][i], 3)
             })
+        # print("search vector store updated chunks after", chunks)
+
+        # try:
+        #     with open(LOGS_DIR,"r+", encoding="utf-8") as file:
+        #         arr = json.load(file)
+        #         arr.append(chunks)
+        #         file.seek(0)
+        #         json.dump(arr, file, indent=4)
+        #         file.truncate()
+        # except Exception as exc:
+        #     print(exc)
+
 
         return {"success": True, "query": query, "results": chunks}
 
     except Exception as e:
+        print("search vector store error", e)
+        # try:
+        #     print("saving error from search vector store")
+        #     with open(LOGS_DIR,"r+", encoding="utf-8") as file:
+        #         arr = json.load(file)
+        #         arr.append(e)
+        #         file.seek(0)
+        #         json.dump(arr, file, indent=4)
+        #         file.truncate()
+        # except Exception as exc:
+        #     print(exc)
+
         return {"success": False, "error": str(e), "query": query}
 
 
-def search_standards_db(query: str, n_results: int = 5) -> dict:
-    """
-    Searches only the automotive standards collection
-    (ISO, IATF 16949, BMW group standards).
-    """
-    try:
-        query_embedding = SentenceTransformer().encode_query(query)
+# def search_standards_db(query: str, n_results: int = 5) -> dict:
+#     """
+#     Searches only the automotive standards collection
+#     (ISO, IATF 16949, BMW group standards).
+#     """
+#     try:
+#         query_embedding = embedding_model.encode_query(query)
 
-        chroma = get_chroma()
-        collection = chroma.get_collection("standards")
+#         chroma = get_chroma()
+#         collection = chroma.get_collection("standards")
 
-        results = collection.query(
-            query_embeddings=[query_embedding],
-            n_results=n_results,
-            include=["documents", "metadatas", "distances"]
-        )
+#         results = collection.query(
+#             query_embeddings=[query_embedding],
+#             n_results=n_results,
+#             include=["documents", "metadatas", "distances"]
+#         )
 
-        chunks = []
-        for i, doc in enumerate(results["documents"][0]):
-            chunks.append({
-                "text": doc,
-                "source": results["metadatas"][0][i].get("source"),
-                "page": results["metadatas"][0][i].get("page"),
-                "relevance_score": round(1 - results["distances"][0][i], 3)
-            })
+#         chunks = []
+#         # print("search standards db before", results, chunks)
+#         for i, doc in enumerate(results["documents"][0]):
+#             chunks.append({
+#                 "text": doc,
+#                 "source": results["metadatas"][0][i].get("source"),
+#                 "page": results["metadatas"][0][i].get("page"),
+#                 "relevance_score": round(1 - results["distances"][0][i], 3)
+#             })
+#         print("search standards db after", chunks)
 
-        return {"success": True, "query": query, "results": chunks}
+#         # try:
+#         #     with open(LOGS_DIR,"r+", encoding="utf-8") as file:
+#         #         arr = json.load(file)
+#         #         arr.append(chunks)
+#         #         file.seek(0)
+#         #         json.dump(arr, file, indent=4)
+#         #         file.truncate()
+#         # except Exception as exc:
+#         #     print(exc)
 
-    except Exception as e:
-        return {"success": False, "error": str(e), "query": query}
+#         return {"success": True, "query": query, "results": chunks}
+
+#     except Exception as e:
+#         print("search standards db error", e)
+#         # try:
+#         #     with open(LOGS_DIR,"r+", encoding="utf-8") as file:
+#         #         arr = json.load(file)
+#         #         arr.append(e)
+#         #         file.seek(0)
+#         #         json.dump(arr, file, indent=4)
+#         #         file.truncate()
+#         # except Exception as exc:
+#         #     print(exc)
+#         return {"success": False, "error": str(e), "query": query}
 
 
 def fetch_document_section(source_filename: str, page_num: int) -> dict:
@@ -122,8 +184,6 @@ def fetch_document_section(source_filename: str, page_num: int) -> dict:
     Use after search_vector_store when you need the full context around a chunk.
     """
     try:
-        DATABASE_PATH = r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\sqlLite_db\apia_db.db"
-        
         with sqlite3.connect(DATABASE_PATH) as conn:
             cursor = conn.cursor()
             rows = cursor.execute("""
@@ -137,12 +197,23 @@ def fetch_document_section(source_filename: str, page_num: int) -> dict:
             chunks = rows.fetchall()
 
         if not chunks:
+            # try:
+            #     with open(LOGS_DIR,"r+", encoding="utf-8") as file:
+            #         arr = json.load(file)
+            #         arr.append(chunks)
+            #         file.seek(0)
+            #         json.dump(arr, file, indent=4)
+            #         file.truncate()
+            # except Exception as exc:
+            #     print(exc)
+
             return {
                 "success": False,
                 "error": f"No content found for {source_filename} page {page_num}"
             }
 
         full_text = "\n".join(row[0] for row in chunks)
+
         return {
             "success": True,
             "source": source_filename,
@@ -189,7 +260,7 @@ def execute_tool(tool_name: str, tool_input: dict) -> str:
     """Routes a tool call to the right function. Returns JSON string."""
     dispatch = {
         "search_vector_store": search_vector_store,
-        "search_standards_db": search_standards_db,
+        # "search_standards_db": search_standards_db,
         "fetch_document_section": fetch_document_section
         # "web_search": web_search,
     }
@@ -258,9 +329,9 @@ RESEARCHER_TOOLS = [
 
 VALIDATOR_TOOLS = [
     {
-        "name": "search_standards_db",
+        "name": "search_vector_store",
         "description": (
-            "Searches the automotive standards knowledge base (ISO 9001, IATF 16949, "
+            "Searches the automotive knowledge base for standards (ISO 9001, IATF 16949, "
             "BMW group standards). Use this to check whether a proposed repair procedure "
             "complies with relevant quality and safety standards."
         ),
@@ -274,9 +345,14 @@ VALIDATOR_TOOLS = [
                 "n_results": {
                     "type": "integer",
                     "default": 5
+                },
+                "doc_type": {
+                    "type": "string",
+                    "description": "Filter by doc type: 'standards'",
+                    "enum": ["standards"]
                 }
             },
-            "required": ["query"]
+            "required": ["query", "doc_type"]
         }
     },
     {
@@ -290,3 +366,19 @@ VALIDATOR_TOOLS = [
         # )
     }
 ]
+
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# log = BASE_DIR / "logs.json"
+# try:
+#     with open(log, "r+") as file:
+#                 arr = json.load(file)
+#                 arr.append({"this": "to"})
+#                 if isinstance(arr, list):
+#                     try:
+#                         file.seek(0)
+#                         json.dump(arr, file, indent=4)
+#                         # file.truncate()
+#                     except Exception as e:
+#                         print(e)
+# except Exception as e:
+#     print(e)

@@ -49,8 +49,10 @@ class HumanDecision(BaseModel):
     feedback: Optional[str] = ""
 
 
-DATABASE_PATH = r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\sqlLite_db\apia_db.db"
-
+BASE_DIR = Path(__file__).resolve().parent
+DATABASE_PATH = BASE_DIR / "data" / "sqlLite_db" / "apia_db.db"
+# CHROMADB_PATH = BASE_DIR / "data" / "chroma_db"
+LOGS_DIR = BASE_DIR / "logs.json"
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
@@ -95,6 +97,18 @@ async def submit_defect(submission: DefectSubmission):
 
     # Run graph — will pause at human_checkpoint
     result = graph.invoke(initial_state, config=config)
+
+    # try:
+    #     print("submit defect", result)
+    #     with open(LOGS_DIR,"r+", encoding="utf-8") as file:
+    #         arr = json.load(file)
+    #         arr.append(result) 
+    #         file.seek(0)
+    #         json.dump(arr, file, indent=4, default=str)
+    #         file.truncate()
+    # except Exception as exc:
+    #     print(exc)
+       
 
     # At this point the graph is paused at interrupt()
     # Return the generated report for human review

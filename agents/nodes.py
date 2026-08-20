@@ -20,6 +20,10 @@ load_dotenv()
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE_PATH = BASE_DIR / "data" / "sqlLite_db" / "apia_db.db"
+# CHROMADB_PATH = BASE_DIR / "data" / "chroma_db"
+LOGS_DIR = BASE_DIR / "logs.json"
 
 # ── Helper: agent loop with tool use ─────────────────────────────────────────
 
@@ -47,6 +51,37 @@ def run_agent_with_tools(
             tools=tools,
             messages=messages
         )
+
+        try:
+            with open(LOGS_DIR, "r+", encoding="utf-8") as file:
+                arr = json.load(file)
+
+                blocks = []
+
+                for block in response.content:
+                    if block.type == "text":
+                        blocks.append({
+                            "type": "text",
+                            "text": block.text
+                        })
+
+                    elif block.type == "tool_use":
+                        blocks.append({
+                            "type": "tool_use",
+                            "id": block.id,
+                            "name": block.name,
+                            "input": block.input
+                        })
+
+                arr.append(blocks)
+
+                file.seek(0)
+                json.dump(arr, file, indent=4, ensure_ascii=False, default=str)
+                file.truncate()
+
+        except Exception as exc:
+            print(exc)
+
 
         if response.stop_reason == "end_turn":
             # Agent is done — extract text response
@@ -132,6 +167,41 @@ Symptom: {defect['symptom_description']}"""
         messages=[{"role": "user", "content": user_message}]
     )
 
+    try:
+        with open(LOGS_DIR, "r+", encoding="utf-8") as file:
+            arr = json.load(file)
+
+            blocks = []
+
+            for block in response.content:
+                if block.type == "text":
+                    blocks.append({
+                        "type": "text",
+                        "text": block.text
+                    })
+
+                elif block.type == "tool_use":
+                    blocks.append({
+                        "type": "tool_use",
+                        "id": block.id,
+                        "name": block.name,
+                        "input": block.input
+                    })
+
+            arr.append(blocks)
+
+            file.seek(0)
+            json.dump(arr, file, indent=4, ensure_ascii=False, default=str)
+            file.truncate()
+
+    except Exception as exc:
+        print(exc)
+
+    
+
+
+
+
     raw = response.content[0].text.strip()
 
     # Strip markdown fences if model adds them
@@ -205,6 +275,16 @@ After your research, respond with a JSON object (no markdown, no explanation):
         model="claude-sonnet-4-6"
     )
 
+    # try:
+    #     with open(LOGS_DIR,"r+") as file:
+    #         arr = json.load(file)
+    #         arr.extend([raw_response, tool_calls])
+    #         file.seek(0)
+    #         json.dump(arr, file, indent=4)
+    # except Exception as exc:
+    #     print(exc)
+
+
     text = raw_response.strip()
     if text.startswith("```"):
         text = text.split("```")[1]
@@ -234,7 +314,7 @@ After your research, respond with a JSON object (no markdown, no explanation):
 def validate_node(state: AgentState) -> dict:
     """
     Checks the proposed repair procedure against automotive standards.
-    Tools: search_standards_db, web_search.
+    Tools: search_vector_store, web_search.
     """
     research = state["research"]
     classification = state["classification"]
@@ -243,7 +323,7 @@ def validate_node(state: AgentState) -> dict:
 Your role is to verify that proposed repair procedures comply with relevant
 automotive standards (IATF 16949, ISO 9001, BMW group standards).
 
-Use search_standards_db to find relevant clauses and requirements.
+Use search_vector_store to find relevant clauses and requirements.
 Use web_search only if local results are insufficient or you need to check
 for very recent regulatory updates.
 
@@ -273,6 +353,15 @@ Flag any safety or regulatory concerns."""
         tools=VALIDATOR_TOOLS,
         model="claude-sonnet-4-6"
     )
+
+    # try:
+    #     with open(LOGS_DIR,"r+") as file:
+    #         arr = json.load(file)
+    #         arr.extend([raw_response, tool_calls])
+    #         file.seek(0)
+    #         json.dump(arr, file, indent=4)
+    # except Exception as exc:
+    #     print(exc)
 
     text = raw_response.strip()
     if text.startswith("```"):
@@ -356,6 +445,38 @@ Return a JSON object with these exact fields:
         messages=[{"role": "user", "content": user_message}]
     )
 
+    try:
+        with open(LOGS_DIR, "r+", encoding="utf-8") as file:
+            arr = json.load(file)
+
+            blocks = []
+
+            for block in response.content:
+                if block.type == "text":
+                    blocks.append({
+                        "type": "text",
+                        "text": block.text
+                    })
+
+                elif block.type == "tool_use":
+                    blocks.append({
+                        "type": "tool_use",
+                        "id": block.id,
+                        "name": block.name,
+                        "input": block.input
+                    })
+
+            arr.append(blocks)
+
+            file.seek(0)
+            json.dump(arr, file, indent=4, ensure_ascii=False, default=str)
+            file.truncate()
+
+    except Exception as exc:
+        print(exc)
+
+       
+
     raw = response.content[0].text.strip()
     if raw.startswith("```"):
         raw = raw.split("```")[1]
@@ -419,7 +540,6 @@ def save_report_node(state: AgentState) -> dict:
     report = state["report"]
 
     # Save to sqlLite
-    DATABASE_PATH = r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\sqlLite_db\apia_db.db"
 
     with sqlite3.connect(DATABASE_PATH) as conn:
         cursor = conn.cursor()

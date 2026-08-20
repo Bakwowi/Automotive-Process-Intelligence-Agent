@@ -83,27 +83,3 @@ def chunk_document(doc: ParsedDocument) -> List[Chunk]:
 
     return chunks
 
-
-
-
-
-
-
-# file_path = Path(r"C:\Users\Bakwowi Junior\Documents\My-Portfolio\Automotive Process Intelligence Agent\data\documents\tsbs\Clunking sounds and vehicle jerking at slow speeds with large steering angle.pdf")
-
-# parsed_doc = parse_document(file_path, "tsb")
-
-# print(chunk_document(parsed_doc))
-
-
-# Chunk
-# ├── chunk_id:    "BMW_P0300.pdf_p2_c3"   ← unique ID: filename + page + chunk index
-# ├── doc_title:   "BMW Engine Misfire Service Information"
-# ├── doc_type:    "tsb"
-# ├── file_path:   "data/documents/tsb/BMW_P0300.pdf"
-# ├── page_num:    2
-# ├── text:        "The ignition coil must be replaced using tool 12-1-xxx.
-# │                 Torque the bolt to 8 Nm. Do not reuse the old coil
-# │                 connector clip as it may..."
-# ├── chunk_index: 3
-# └── metadata:    { source: "BMW_P0300.pdf", doc_type: "tsb", page: 2 }
