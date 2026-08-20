@@ -209,18 +209,19 @@ Open your browser:
 
 
 **Defect Submission Form**
+![Defect Tab](assets/screenshots/submit.png)
 
 
 **Live Agent Trace**
-<!-- ![Trace Tab](assets/screenshots/trace.png) -->
+![Trace Tab](assets/screenshots/trace.png)
 
 **Report Review and Approval**
-<!-- ![Review Tab](assets/screenshots/review.png) -->
+![Review Tab](assets/screenshots/review.png)
 
-**Generated Word Report**
-<!-- ![Word Report](assets/screenshots/report_docx.png) -->
+<!-- **Generated Word Report**
+![Word Report](assets/screenshots/report_docx.png) -->
 
-**Langfuse Trace Dashboard**
+<!-- **Langfuse Trace Dashboard** -->
 <!-- ![Langfuse](assets/screenshots/langfuse.png) -->
 
 ---
