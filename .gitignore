@@ -5,6 +5,7 @@ __pycache__/
 
 .vscode/
 
+APIA_Problem_Definition.md
 # C extensions
 *.so
 
