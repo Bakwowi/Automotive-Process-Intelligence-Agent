@@ -1,4 +1,4 @@
-# 🔧 Automotive Process Intelligence Agent (APIA)
+# Automotive Process Intelligence Agent (APIA)
 
 > A production-grade multi-agent AI system that automates BMW Z4 vehicle defect analysis and technical report generation - reducing a 90-180 minute manual engineering workflow to under 2 minutes.
 
@@ -207,10 +207,9 @@ Open your browser:
 
 ## Screenshots
 
-<!-- PLACEHOLDER: Add screenshots of each UI tab -->
 
 **Defect Submission Form**
-<!-- ![Submit Tab](assets/screenshots/submit.png) -->
+
 
 **Live Agent Trace**
 <!-- ![Trace Tab](assets/screenshots/trace.png) -->
